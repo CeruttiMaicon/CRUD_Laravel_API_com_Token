@@ -17,11 +17,11 @@
         <div class="flex-center position-ref full-height">
             <div class="content">
                 <div class="jumbotron">
-                    <h1 class="display-4">Olá, mundo!</h1>
-                    <p class="lead">Este é um simples componente jumbotron para chamar mais atenção a um determinado conteúdo ou informação.</p>
+                    <h1 class="display-4">Olá, seja bem vindo ao projeto!</h1>
+                    <p class="lead">Aqui neste link existe um CRUD onde eu utilizarei o Laravel para fazer uma API com autenticação por Token.</p>
                     <hr class="my-4">
-                    <p>Ele usa classes utilitárias para tipografia e espaçamento de conteúdo, dentro do maior container.</p>
-                    <a class="btn btn-primary btn-lg" href="#" role="button">Leia mais</a>
+                    <p>Clique no botão abaixo para ir para a tela de listagem.</p>
+                    <a class="btn btn-primary btn-lg" href="#" role="button">CRUD</a>
                 </div>
             </div>
         </div>

@@ -6,12 +6,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>Laravel API - Utilizando Token</title>
-
-        <!-- Fonts -->
-      
-
-        <!-- Styles -->
-        
     </head>
     <body>
         <div class="flex-center position-ref full-height">
@@ -21,7 +15,7 @@
                     <p class="lead">Aqui neste link existe um CRUD onde eu utilizarei o Laravel para fazer uma API com autenticação por Token.</p>
                     <hr class="my-4">
                     <p>Clique no botão abaixo para ir para a tela de listagem.</p>
-                    <a class="btn btn-primary btn-lg" href="#" role="button">CRUD</a>
+                    <a class="btn btn-primary btn-lg" href="{{route('empresa.index')}}" role="button">CRUD</a>
                 </div>
             </div>
         </div>

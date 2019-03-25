@@ -16,6 +16,7 @@
                     <hr class="my-4">
                     <p>Clique no botão abaixo para ir para a tela de listagem.</p>
                     <a class="btn btn-primary btn-lg" href="{{route('empresa.index')}}" role="button">CRUD</a>
+                    <p class="lead">Utilizei deste tutorial para fazer o CRUD utilizando a API <a href="https://medium.com/techcompose/create-rest-api-in-laravel-with-authentication-using-passport-133a1678a876">Link</a></p>
                 </div>
             </div>
         </div>

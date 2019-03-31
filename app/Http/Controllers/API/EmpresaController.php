@@ -10,7 +10,6 @@ use Validator;
 class EmpresaController extends Controller
 {
     public $successStatus = 200;
-    public $errorPerissionStatus = 401;
 
     /** 
      * Index Empresas API 
@@ -37,7 +36,7 @@ class EmpresaController extends Controller
         ]);
 
         if ($validator->fails()) { 
-            return response()->json(['error'=>$validator->errors()], $this->$errorPerissionStatus);            
+            return response()->json(['error'=>$validator->errors()], 401);            
         }
 
         $empresa = Empresa::create($request->all());
@@ -48,26 +47,33 @@ class EmpresaController extends Controller
 
         return response()->json(['success'=>$success], $this->successStatus); 
     }
+    public function show($id)
+    {
+        $empresa = Empresa::where('id', $id)->get();
+
+        if( count($empresa) == 0 ){
+            $success['mensagem']    = "Error 204 - Registro não encontrado"; 
+            return response()->json([], 204);
+        }
+        return response()->json(['success'=>$empresa], $this->successStatus); 
+    }
 
     /** 
      * Update Empresas API 
      * 
      * @return \Illuminate\Http\Response 
      */ 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
+
         $validator = Validator::make($request->all(), [ 
-            'id'            => 'required', 
             'nome_empresa'  => 'required', 
             'cnpj'          => 'required', 
             'nome_cidade'   => 'required', 
         ]);
 
-        if ($validator->fails()) { 
-            return response()->json(['error'=>$validator->errors()], $this->$errorPerissionStatus);            
-        }
 
-        $empresa = Empresa::where('id', $request->id)->update($request->all());
+        $empresa = Empresa::where('id', $id)->update($request->all());
    
         $success['nome_empresa']    = $request->nome_empresa; 
         $success['cnpj']            = $request->cnpj;
@@ -76,21 +82,12 @@ class EmpresaController extends Controller
         return response()->json(['success'=>$success], $this->successStatus); 
     }
 
-    public function destroy(Request $request)
+    public function destroy($id)
     {
-        $validator = Validator::make($request->all(), [ 
-            'id'            => 'required', 
-        ]);
-
-        if ($validator->fails()) { 
-            return response()->json(['error'=>$validator->errors()], $this->$errorPerissionStatus);            
-        }
-        
-        $empresa = Empresa::destroy($request->id);
+        $empresa = Empresa::destroy($id);
 
         $success['mensagem']    = "Registro deletado com sucesso"; 
        
-        
         return response()->json(['success'=>$success], $this->successStatus); 
     }
 }

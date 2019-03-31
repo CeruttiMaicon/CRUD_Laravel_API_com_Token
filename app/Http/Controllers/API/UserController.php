@@ -10,7 +10,6 @@ class UserController extends Controller
 {
 
     public $successStatus = 200;
-    public $errorPerissionStatus = 401;
 /** 
      * Login API 
      * 
@@ -27,7 +26,7 @@ class UserController extends Controller
         } 
         else{ 
 
-            return response()->json(['error'=>'Error 401 - Acesso não autorizado'], $this->$errorPerissionStatus); 
+            return response()->json(['error'=>'Error 401 - Acesso não autorizado'], 401); 
         } 
     }
 /** 
@@ -44,7 +43,7 @@ class UserController extends Controller
             'c_password' => 'required|same:password', 
         ]);
         if ($validator->fails()) { 
-            return response()->json(['error'=>$validator->errors()], $this->$errorPerissionStatus);            
+            return response()->json(['error'=>$validator->errors()], 401);            
         }
         $input = $request->all(); 
         $input['password'] = bcrypt($input['password']); 

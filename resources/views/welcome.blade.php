@@ -21,7 +21,6 @@
                     <p class="lead">Utilizei deste tutorial para fazer o CRUD utilizando a API <a href="https://medium.com/techcompose/create-rest-api-in-laravel-with-authentication-using-passport-133a1678a876">Link</a></p>
                 </div>
             </div>
-           
         </div>
     </body>
 @endsection

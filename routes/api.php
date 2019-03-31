@@ -33,7 +33,6 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('empresa/{id}', 'API\EmpresaController@show');
     Route::post('empresa', 'API\EmpresaController@store');
     Route::match(['put', 'patch', 'post'], 'empresa/{id}', 'API\EmpresaController@update');
-
     Route::delete('empresa/{id}', 'API\EmpresaController@destroy');
  
 });

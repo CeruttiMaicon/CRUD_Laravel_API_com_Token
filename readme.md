@@ -33,6 +33,8 @@ Depois que o provedor de serviços Passport se registra, é necessário executar
 Em seguida, precisamos instalar um passaporte(chave de autenticação) ele criará chaves de token para a segurança da aplicação. Usando o comando:
 
     php artisan passport:install
+
+> Caso o banco de dados seja limpo você terá de executar esse comando novamente, pois ele gera o token de autenticação inicial da aplicação.
  
  Nesta etapa, temos que fazer a configuração no modelo de três locais, no provedor de serviços e no arquivo de configuração de autenticação. Então você tem que apenas seguir a mudança nesse arquivo.
 

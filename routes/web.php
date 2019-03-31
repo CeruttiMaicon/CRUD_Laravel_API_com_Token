@@ -17,6 +17,10 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('home', 'HomeController@index')->name('home');
 
-Route::resource('/empresa', 'EmpresaController');
+//Valida se o usuario esta logado
+Route::middleware(['auth'])->group(function () {
+    Route::resource('empresa', 'EmpresaController');
+});
+

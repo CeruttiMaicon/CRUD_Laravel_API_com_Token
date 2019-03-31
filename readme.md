@@ -12,45 +12,203 @@
 O Laravel é um framework de aplicação web com sintaxe expressiva e elegante. Acreditamos que o desenvolvimento deve ser uma experiência agradável e criativa para ser verdadeiramente gratificante. Contudo vou desenvolver com este projeto um CRUD simples para mostrar como funciona uma API com o Laravel utilizando dos tokens forneceidos pelo próprio framework para garantir a segurança dos usuarios que o estão fazendo.
 
 
-## Laravel Sponsors
+## Fazendo o CRUD de cadastro do usuario para realizar Login no sistema.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Primeiramente precisamos do Laravel Passport instalado no nosso projeto.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
+    composer require laravel/passport
 
-## Contributing
+Depois de instalar o pacote com sucesso, abra o arquivo config/app.php e adicione o provedor de serviços as seguintes linhas de código.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+<b>config/app.php</b>
 
-## Security Vulnerabilities
+    'providers' =>[
+        Laravel\Passport\PassportServiceProvider::class,
+    ],
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Depois que o provedor de serviços Passport se registra, é necessário executar o comando de migração , após executar o comando de migração, você obterá várias novas tabelas no banco de dados. Então, vamos rodar abaixo do comando:
 
+    php artisan migrate
+
+Em seguida, precisamos instalar um passaporte(chave de autenticação) ele criará chaves de token para a segurança da aplicação. Usando o comando:
+
+    php artisan passport:install
+ 
+ Nesta etapa, temos que fazer a configuração no modelo de três locais, no provedor de serviços e no arquivo de configuração de autenticação. Então você tem que apenas seguir a mudança nesse arquivo.
+
+No model de User adicionamos a chamada de:
+
+<b>app/User.php</b>
+
+    use Laravel\Passport\HasApiTokens;
+
+No arquivo do AuthServiceProvider adicionamos o seguinte:
+    
+    Passport::routes();
+
+Em auth.php, adicionamos a configuração de autenticação da API.
+
+Os arquivos ficaram da seguinte maneira.
+
+<b>app/User.php</b>
+
+    <?php
+    namespace App;
+    use Laravel\Passport\HasApiTokens;
+    use Illuminate\Notifications\Notifiable;
+    use Illuminate\Foundation\Auth\User as Authenticatable;
+    class User extends Authenticatable
+    {
+    use HasApiTokens, Notifiable;
+    /**
+    * The attributes that are mass assignable.
+    *
+    * @var array
+    */
+    protected $fillable = [
+    'name', 'email', 'password',
+    ];
+    /**
+    * The attributes that should be hidden for arrays.
+    *
+    * @var array
+    */
+    protected $hidden = [
+    'password', 'remember_token',
+    ];
+    }
+
+<b>app/Providers/AuthServiceProvider.php</b>
+
+    <?php
+    namespace App\Providers;
+    use Laravel\Passport\Passport; 
+    use Illuminate\Support\Facades\Gate; 
+    use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+    class AuthServiceProvider extends ServiceProvider 
+    { 
+        /** 
+        * The policy mappings for the application. 
+        * 
+        * @var array 
+        */ 
+        protected $policies = [ 
+            'App\Model' => 'App\Policies\ModelPolicy', 
+        ];
+    /** 
+        * Register any authentication / authorization services. 
+        * 
+        * @return void 
+        */ 
+        public function boot() 
+        { 
+            $this->registerPolicies(); 
+            Passport::routes(); 
+        } 
+    }
+
+<b>config/auth.php</b>
+
+    <?php
+    return [
+    'guards' => [ 
+            'web' => [ 
+                'driver' => 'session', 
+                'provider' => 'users', 
+            ], 
+            'api' => [ 
+                'driver' => 'passport', 
+                'provider' => 'users', 
+            ], 
+        ],
+
+Agora criaremos rotas de API. O Laravel fornece o arquivo api.php para a rota de serviços da Web de gravação. Então, vamos adicionar uma nova rota nesse arquivo.
+
+<b>routes/api.php</b>
+
+    <?php
+    /*
+    |--------------------------------------------------------------------------
+    | API Routes
+    |--------------------------------------------------------------------------
+    |
+    | Here is where you can register API routes for your application. These
+    | routes are loaded by the RouteServiceProvider within a group which
+    | is assigned the "api" middleware group. Enjoy building your API!
+    |
+    */
+    Route::post('login', 'API\UserController@login');
+    Route::post('register', 'API\UserController@register');
+    Route::group(['middleware' => 'auth:api'], function(){
+        Route::post('details', 'API\UserController@details');
+    });
+
+Na última etapa, temos que criar um novo controlador e três métodos de API. Primeiro, crie um novo diretório “API” na pasta Controllers. Então, vamos criar o UserController e colocar o código abaixo:
+
+    <?php
+    namespace App\Http\Controllers\API;
+    use Illuminate\Http\Request; 
+    use App\Http\Controllers\Controller; 
+    use App\User; 
+    use Illuminate\Support\Facades\Auth; 
+    use Validator;
+    class UserController extends Controller 
+    {
+    public $successStatus = 200;
+      /** 
+        * login api 
+        * 
+        * @return \Illuminate\Http\Response 
+        */ 
+        public function login(){ 
+            if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){ 
+                $user = Auth::user(); 
+                $success['token'] =  $user->createToken('MyApp')-> accessToken; 
+                return response()->json(['success' => $success], $this-> successStatus); 
+            } 
+            else{ 
+                return response()->json(['error'=>'Unauthorised'], 401); 
+            } 
+        }
+      /** 
+        * Register api 
+        * 
+        * @return \Illuminate\Http\Response 
+        */ 
+        public function register(Request $request) 
+        { 
+            $validator = Validator::make($request->all(), [ 
+                'name' => 'required', 
+                'email' => 'required|email', 
+                'password' => 'required', 
+                'c_password' => 'required|same:password', 
+            ]);
+            if ($validator->fails()) { 
+                return response()->json(['error'=>$validator->errors()], 401);            
+            }
+            $input = $request->all(); 
+            $input['password'] = bcrypt($input['password']); 
+            $user = User::create($input); 
+            $success['token'] =  $user->createToken('MyApp')-> accessToken; 
+            $success['name'] =  $user->name;
+            return response()->json(['success'=>$success], $this-> successStatus); 
+        }
+      /** 
+        * details api 
+        * 
+        * @return \Illuminate\Http\Response 
+        */ 
+        
+        public function details() 
+        { 
+            $user = Auth::user(); 
+            return response()->json(['success' => $user], $this-> successStatus); 
+        } 
+    }
+
+Agora estamos prontos para rodar nosso exemplo, então corra abaixo do comando para executar rapidamente:
+
+    php artisan serve
 ## License
 
 The Laravel framework is open-source software licensed under the [MIT license](https://opensource.org/licenses/MIT).

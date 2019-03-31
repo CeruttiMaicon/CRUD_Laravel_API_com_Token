@@ -37,9 +37,9 @@ class EmpresaController extends Controller
     public function store(Request $request)
     {
         request()->validate([
-            'nome_cidade' => 'required',
-            'cnpj' => 'required',
-            'nome_cidade' => 'required',
+            'nome_empresa'  => 'required',
+            'cnpj'          => 'required',
+            'nome_cidade'   => 'required',
             // image required ?? talvez
         ]);
 
